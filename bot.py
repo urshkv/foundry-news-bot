@@ -5,7 +5,7 @@ from database import is_duplicate, save_news
 import asyncio
 
 
-TOKEN = "8509979897:AAHJSxN1AWaLEwaYgKquzYnwqHs4F4-G2SA"
+TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
 
 async def now(update, context):

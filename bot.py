@@ -2,8 +2,6 @@ from telegram.ext import ApplicationBuilder, CommandHandler
 from parser import parse_all
 from filters import get_top
 from database import is_duplicate, save_news
-import asyncio
-
 
 TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
@@ -13,13 +11,30 @@ async def now(update, context):
     fresh = []
 
     for n in news:
-        if not is_duplicate(n['link']):
+        if not is_duplicate(n["link"]):
             save_news(n)
             fresh.append(n)
 
-    for n in get_top(fresh):
-        await update.message.reply_text(f"📰 {n['title']}\n{n['link']}")
+    top_news = get_top(fresh)
 
-app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("now", now))
-app.run_polling()
+    # Fallback: если новостей нет
+    if not top_news:
+        await update.message.reply_text(
+            "📭 Сейчас нет свежих новостей. Попробуйте позже."
+        )
+        return
+
+    for n in top_news:
+        await update.message.reply_text(
+            f"📰 {n['title']}\n{n['link']}"
+        )
+
+
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("now", now))
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()

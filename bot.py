@@ -6,7 +6,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-TOKEN = "8509979897:AAEhaet2W5kQLMjThjlStq_X2Z9lLFzC_Ps"
+TOKEN = "TOKEN"
 
 
 async def now(update, context):

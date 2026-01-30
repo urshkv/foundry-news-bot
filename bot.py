@@ -2,25 +2,30 @@ from telegram.ext import ApplicationBuilder, CommandHandler
 from parser import parse_all
 from filters import get_top
 from database import is_duplicate, save_news
+import logging
 
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+logging.basicConfig(level=logging.INFO)
+
+TOKEN = "8509979897:AAEhaet2W5kQLMjThjlStq_X2Z9lLFzC_Ps"
 
 
 async def now(update, context):
     news = parse_all()
-    fresh = []
+    collected = []
 
     for n in news:
         if not is_duplicate(n["link"]):
             save_news(n)
-            fresh.append(n)
+            collected.append(n)
 
-    top_news = get_top(fresh)
+    if not collected:
+        collected = news
 
-    # Fallback: если новостей нет
+    top_news = get_top(collected)
+
     if not top_news:
         await update.message.reply_text(
-            "📭 Сейчас нет свежих новостей. Попробуйте позже."
+            "📭 Сейчас нет доступных новостей. Попробуйте позже."
         )
         return
 
@@ -33,7 +38,9 @@ async def now(update, context):
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("now", now))
-    app.run_polling()
+
+    print("🤖 Бот запущен и ждёт команды /now")
+    app.run_polling()  # ⬅️ ЭТА СТРОКА ДОЛЖНА БЛОКИРОВАТЬ ПРОЦЕСС
 
 
 if __name__ == "__main__":
